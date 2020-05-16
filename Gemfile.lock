@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/fast-jsonapi/fast_jsonapi
+  revision: ac34aa22f7882f54cb7cab352489930c012e1e1b
+  specs:
+    fast_jsonapi (1.7.1)
+      activesupport (>= 4.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -184,6 +191,7 @@ DEPENDENCIES
   byebug
   capybara
   factory_bot_rails
+  fast_jsonapi (~> 1.7.1)!
   listen (>= 3.0.5, < 3.2)
   pg (>= 0.18, < 2.0)
   pry
