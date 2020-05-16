@@ -6,11 +6,15 @@ namespace :db do
       Dir.glob("#{Rails.root}/app/models/*.rb").each { |file| require file }
 
       system 'rails db:reset'
-      
+
       CSV.foreach('./lib/customers.csv', headers: true) do |row|
         Customer.create(row.to_hash)
       end
       puts 'Created customer records'
+
+      CSV.foreach('./lib/invoice_items.csv', headers: true) do |row|
+        InvoiceItems.create(row.to_hash)
+      end
     end
   end
 end
