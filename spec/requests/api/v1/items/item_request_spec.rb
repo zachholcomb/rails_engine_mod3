@@ -51,6 +51,7 @@ describe 'Items API' do
 
     expect(response).to be_successful
     expect(Item.count).to eq(21)
+    expect(item.merchant).to eq(@merchant)
 
     expect(item_response['data']['attributes']['name']).to eq(item.name)
     expect(item_response['data']['attributes']['description']).to eq(item.description)
@@ -62,7 +63,7 @@ describe 'Items API' do
     item_params = {
       name: 'Slingshot',
       description: "It's cool!",
-      unit_price: 29.99,
+      unit_price: 299.99,
       merchant_id: @merchant.id
     }
     item = Item.last
@@ -91,5 +92,16 @@ describe 'Items API' do
     expect(response).to be_successful
     expect(item_response['data']['attributes']['name']).to eq(item.name)
     expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'can get merchant associated with an item' do
+    item = Item.last
+    merchant_expectations = item.merchant.name
+
+    get "/api/v1/items/#{item.id}/merchant"
+    merchant_response = JSON.parse(response.body)
+
+    expect(response).to be_successful
+    expect(merchant_response['data']['attributes']['name']).to eq(merchant_expectations)
   end
 end
