@@ -18,6 +18,7 @@ namespace :db do
       puts 'Created merchant records'
 
       CSV.foreach('./lib/items.csv', headers: true) do |row|
+        row[3] = row[3].to_i / 100.to_f
         merchant = Merchant.find(row[4])
         merchant.items.create(row.to_hash)
       end
