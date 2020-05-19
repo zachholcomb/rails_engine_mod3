@@ -20,8 +20,8 @@ class Merchant < ApplicationRecord
     Merchant.joins(:item_invoices, :transactions)
             .where('transactions.result = 0')
             .select('merchants.*, sum(item_invoices.quantity) as quantity')
-             .group(:id)
-             .order('quantity desc')
-             .limit(limit_quantity)
+            .group(:id)
+            .order('quantity desc')
+            .limit(limit_quantity)
   end
 end
