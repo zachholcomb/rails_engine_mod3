@@ -104,4 +104,199 @@ describe 'Items API' do
     expect(response).to be_successful
     expect(merchant_response['data']['attributes']['name']).to eq(merchant_expectations)
   end
+
+  it "can return item by string query" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find?name=frisbee"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data']['attributes']['name']).to eq(item.name)
+
+    get "/api/v1/items/find?name=fris"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data']['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return item by partial description" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find?description=flying off the shelves"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data']['attributes']['name']).to eq(item.name)
+
+    get "/api/v1/items/find?description=shelves"
+    merchant_response2 = JSON.parse(response.body)
+    expect(merchant_response2['data']['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return item by unit price" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find?unit_price=20.99"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data']['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return item by merchant_id" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find?merchant_id=#{merchant.id}"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data']['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return all items matching a query string" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+    item2 = Item.create(name: 'Frisbee Freakout',
+                    description: 'Flying off the shelves',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+    item3 = Item.create(name: 'Frisbee Factory',
+                    description: 'Flying off the shelves',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find_all?name=frisbee"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data'].count).to eq(3)
+    expect(merchant_response['data'][0]['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return all items whose description match a query string" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+    item2 = Item.create(name: 'Frisbee Freakout',
+                    description: 'Watch these babies fly!',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+    item3 = Item.create(name: 'Frisbee Factory',
+                    description: 'They fly good!',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find_all?description=fly"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data'].count).to eq(3)
+    expect(merchant_response['data'][0]['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return all merchants whose unit_price matches a query" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+    item2 = Item.create(name: 'Frisbee Freakout',
+                    description: 'Watch these babies fly!',
+                    unit_price: 10.99,
+                    merchant: merchant
+    )
+    item3 = Item.create(name: 'Frisbee Factory',
+                    description: 'They fly good!',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find_all?unit_price=20.99"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data'].count).to eq(2)
+    expect(merchant_response['data'][0]['attributes']['name']).to eq(item.name)
+  end
+
+  it "can return all merchants whose unit_price matches a query" do
+    merchant = create(:merchant)
+    merchant2 = create(:merchant)
+    item = Item.create(name: 'Frisbee',
+                        description: 'Flying off the shelves',
+                        unit_price: 20.99,
+                        merchant: merchant
+    )
+    item2 = Item.create(name: 'Frisbee Freakout',
+                    description: 'Watch these babies fly!',
+                    unit_price: 10.99,
+                    merchant: merchant
+    )
+    item3 = Item.create(name: 'Frisbee Factory',
+                    description: 'They fly good!',
+                    unit_price: 20.99,
+                    merchant: merchant
+    )
+
+    5.times do
+      create(:item, merchant: merchant2)
+    end
+
+    get "/api/v1/items/find_all?merchant_id=#{merchant2.id}"
+    merchant_response = JSON.parse(response.body)
+    expect(merchant_response['data'].count).to eq(5)
+  end
 end
