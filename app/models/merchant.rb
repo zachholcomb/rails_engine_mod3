@@ -8,7 +8,7 @@ class Merchant < ApplicationRecord
   scope :filter_by_updated_at, -> (updated_at) { where("Date(updated_at) = ?", "#{updated_at}") }
 
   def self.most_revenue(limit_quantity)
-    Merchant.joins(:invoices, :item_invoices, :transactions)
+    Merchant.joins(:item_invoices, :transactions)
             .where('transactions.result = 0')
             .select('merchants.*, sum(item_invoices.unit_price * item_invoices.quantity) as revenue')
             .group(:id)
