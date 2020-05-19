@@ -39,10 +39,10 @@ namespace :db do
       puts 'Created invoice items'
 
       CSV.foreach('./lib/transactions.csv', headers: true) do |row|
-        if row[3] == 'success'
-          row[3] = 0
-        else row[3] == 'failed'
-          row[3] = 1
+        if row[4] == 'success'
+          row[4] = 0
+        else row[4] == 'failed'
+          row[4] = 1
         end
         Transaction.create(row.to_hash)
       end
