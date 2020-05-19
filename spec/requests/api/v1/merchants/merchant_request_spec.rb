@@ -149,4 +149,19 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(merchant_response['data'].count).to eq(3)
   end
+
+  it "can find a merchant with multiple queries" do
+    merchant = Merchant.create(name: 'Orange', created_at: "2020-03-22 18:01:38 UTC", updated_at: "2020-03-23 19:01:38 UTC")
+    merchant2 = Merchant.create(name: 'Orange Julius')
+    merchant3 = Merchant.create(name: 'Crabapple for you')
+    merchant4 = create(:merchant)
+    merchant5 = create(:merchant)
+    merchant6 = create(:merchant)
+
+    get "/api/v1/merchants/find?name=orange&created_at=#{merchant.created_at}"
+    merchant_response = JSON.parse(response.body)
+
+    expect(response).to be_successful
+    expect(merchant_response['data']['attributes']['id']).to eq(merchant.id)
+  end
 end
