@@ -1,4 +1,6 @@
 class Item < ApplicationRecord
+  include Filterable
+  
   belongs_to :merchant
   has_many :item_invoices
   has_many :invoices, through: :item_invoices
