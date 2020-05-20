@@ -4,4 +4,5 @@ class Invoice < ApplicationRecord
   has_many :item_invoices
   has_many :items, through: :item_invoices
   has_many :transactions
+  enum status: %w(shipped pending)
 end
