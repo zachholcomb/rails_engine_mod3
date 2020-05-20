@@ -240,4 +240,36 @@ describe "Merchants API" do
     expect(merchant_response['data'][0]['attributes']['name']).to eq(merchant2.name)
     expect(merchant_response['data'][1]['attributes']['name']).to eq(merchant3.name)
   end
+
+  it 'can get revenue for one merchant' do
+    customer1 = create(:customer)
+    customer2 = create(:customer)
+    merchant1 = create(:merchant)
+
+    item1 = create(:item, merchant: merchant1)
+    item2 = create(:item, merchant: merchant1)
+    item3 = create(:item, merchant: merchant1)
+
+    invoice1 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0)
+    invoice2 = Invoice.create!(customer: customer2, merchant: merchant1, status: 0)
+    invoice3 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0)
+    invoice4 = Invoice.create!(customer: customer2, merchant: merchant1, status: 0)
+    ItemInvoice.create!(item: item1, invoice: invoice1, quantity: 1, unit_price: item1.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice4, quantity: 1, unit_price: item3.unit_price)
+    Transaction.create!(invoice: invoice1, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice2, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice3, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice4, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 1)
+    
+    get "/api/v1/merchants/#{merchant1.id}/revenue"
+    merchant_response = JSON.parse(response.body)
+
+    expect(response).to be_successful
+    expect(merchant_response['data']['attributes']['revenue']).to eq(9.0)
+  end
 end
