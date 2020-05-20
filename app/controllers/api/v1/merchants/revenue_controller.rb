@@ -3,4 +3,9 @@ class Api::V1::Merchants::RevenueController < ApplicationController
     merchants = Merchant.most_revenue(params[:quantity])
     render json: MerchantSerializer.new(merchants)
   end
+
+  def show
+    merchant = Merchant.find(params[:id])
+    render json: MerchantRevenueSerializer.new(merchant)
+  end
 end
