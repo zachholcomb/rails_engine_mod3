@@ -1,17 +1,17 @@
 class Api::V1::Merchants::SearchController < ApplicationController
   def index
-    @merchant = Merchant.where(nil)
-    @merchant = @merchant.filter_by_name(params[:name]) if params[:name].present?
-    @merchant = @merchant.filter_by_created_at(params[:created_at]) if params[:created_at].present?
-    @merchant = @merchant.filter_by_updated_at(params[:updated_at]) if params[:updated_at].present?
-    render json: MerchantSerializer.new(@merchant)
+    merchants = Merchant.filter(filtering_params(params))
+    render json: MerchantSerializer.new(merchants)
   end
 
   def show
-    @merchant = Merchant.where(nil)
-    @merchant = @merchant.filter_by_name(params[:name]) if params[:name].present?
-    @merchant = @merchant.filter_by_created_at(params[:created_at]) if params[:created_at].present?
-    @merchant = @merchant.filter_by_updated_at(params[:updated_at]) if params[:updated_at].present?
-    render json: MerchantSerializer.new(@merchant.first)
+    merchant = Merchant.filter(filtering_params(params)).first
+    render json: MerchantSerializer.new(merchant)
+  end
+
+  private 
+
+  def filtering_params(params)
+    params.slice(:name, :created_at, :updated_at)
   end
 end
