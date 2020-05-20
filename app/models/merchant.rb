@@ -9,7 +9,7 @@ class Merchant < ApplicationRecord
 
   def self.most_revenue(limit_quantity)
     Merchant.joins(:item_invoices, :transactions)
-            .where('transactions.result = 0')
+            .merge(Transaction.successful)
             .select('merchants.*, sum(item_invoices.unit_price * item_invoices.quantity) as revenue')
             .group(:id)
             .order('revenue desc')
@@ -18,10 +18,17 @@ class Merchant < ApplicationRecord
 
   def self.most_items(limit_quantity)
     Merchant.joins(:item_invoices, :transactions)
-            .where('transactions.result = 0')
+            .merge(Transaction.successful)
             .select('merchants.*, sum(item_invoices.quantity) as quantity')
             .group(:id)
             .order('quantity desc')
             .limit(limit_quantity)
+  end
+
+  def self.revenue(merchant_id)
+    joins(invoices: [:item_invoices, :transactions])
+    .merge(Transaction.successful)
+    .where(id: merchant_id)
+    .sum('item_invoices.quantity * item_invoices.unit_price')
   end
 end
