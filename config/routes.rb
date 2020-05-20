@@ -21,6 +21,9 @@ Rails.application.routes.draw do
       resources :items, only: [:index, :show, :create, :update, :destroy]
 
       get '/items/:item_id/merchant', to: 'merchants#show'
+
+      get '/revenue', to: 'revenue#index'
+      get '/merchants/:id/revenue', to: 'revenue#show'
     end
   end
 end

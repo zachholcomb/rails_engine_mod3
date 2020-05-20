@@ -240,4 +240,74 @@ describe "Merchants API" do
     expect(merchant_response['data'][0]['attributes']['name']).to eq(merchant2.name)
     expect(merchant_response['data'][1]['attributes']['name']).to eq(merchant3.name)
   end
+
+  it 'can get revenue for one merchant' do
+    customer1 = create(:customer)
+    customer2 = create(:customer)
+    merchant1 = create(:merchant)
+
+    item1 = create(:item, merchant: merchant1)
+    item2 = create(:item, merchant: merchant1)
+    item3 = create(:item, merchant: merchant1)
+
+    invoice1 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0)
+    invoice2 = Invoice.create!(customer: customer2, merchant: merchant1, status: 0)
+    invoice3 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0)
+    invoice4 = Invoice.create!(customer: customer2, merchant: merchant1, status: 0)
+    ItemInvoice.create!(item: item1, invoice: invoice1, quantity: 1, unit_price: item1.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice4, quantity: 1, unit_price: item3.unit_price)
+    Transaction.create!(invoice: invoice1, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice2, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice3, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice4, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 1)
+    
+    get "/api/v1/merchants/#{merchant1.id}/revenue"
+    merchant_response = JSON.parse(response.body)
+
+    expect(response).to be_successful
+    expect(merchant_response['data']['attributes']['revenue']).to eq(9.0)
+  end
+
+  it 'can get revenue for all merchants across a date range' do
+    customer1 = create(:customer)
+    merchant1 = create(:merchant)
+
+    item1 = create(:item, merchant: merchant1)
+    item2 = create(:item, merchant: merchant1)
+    item3 = create(:item, merchant: merchant1)
+
+    invoice1 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0, created_at: "1990-03-22 18:01:38 UTC")
+    invoice2 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0, created_at: "1990-03-30 18:01:38 UTC")
+    invoice3 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0, created_at: "1990-04-01 18:01:38 UTC")
+    invoice4 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0, created_at: "1990-05-30 18:01:38 UTC")
+    invoice5 = Invoice.create!(customer: customer1, merchant: merchant1, status: 0, created_at: "1990-09-30 18:01:38 UTC")
+
+    ItemInvoice.create!(item: item1, invoice: invoice1, quantity: 1, unit_price: item1.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item2, invoice: invoice2, quantity: 1, unit_price: item2.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice3, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice4, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice4, quantity: 1, unit_price: item3.unit_price)
+    ItemInvoice.create!(item: item3, invoice: invoice5, quantity: 1, unit_price: item3.unit_price)
+    Transaction.create!(invoice: invoice1, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice2, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice3, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 1)
+    Transaction.create!(invoice: invoice4, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    Transaction.create!(invoice: invoice5, credit_card_number: '222222222', credit_card_expiration_date: nil, result: 0)
+    
+    start_date = '1990-02-01'
+    end_date = '1990-07-01'
+    expect(Merchant.revenue_date_range(start_date, end_date)).to eq(7.5)
+
+    get "/api/v1/revenue?start=#{start_date}&end=#{end_date}"
+    merchant_response = JSON.parse(response.body)
+
+    expect(response).to be_successful
+    expect(merchant_response['data']['attributes']['revenue']).to eq(7.5)
+  end
 end

@@ -31,4 +31,11 @@ class Merchant < ApplicationRecord
     .where(id: merchant_id)
     .sum('item_invoices.quantity * item_invoices.unit_price')
   end
+
+  def self.revenue_date_range(start_date, end_date)
+    joins(invoices: [:item_invoices, :transactions])
+    .merge(Transaction.successful)
+    .where('date(invoices.created_at) BETWEEN ? AND ?', start_date, end_date)
+    .sum('item_invoices.quantity * item_invoices.unit_price')
+  end
 end
