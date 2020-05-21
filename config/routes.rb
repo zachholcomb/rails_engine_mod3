@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       resources :items, execpt: [:new, :edit]
 
       get '/revenue', to: 'revenue#index'
-      get '/merchants/:id/revenue', to: 'revenue#show'
+      get '/merchants/:id/revenue', to: 'merchant_revenue#show'
     end
   end
 end
