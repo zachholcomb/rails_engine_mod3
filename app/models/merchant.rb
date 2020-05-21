@@ -1,4 +1,6 @@
 class Merchant < ApplicationRecord
+  include Filterable
+
   has_many :items
   has_many :invoices
   has_many :item_invoices, through: :invoices
@@ -8,21 +10,21 @@ class Merchant < ApplicationRecord
   scope :filter_by_updated_at, -> (updated_at) { where("Date(updated_at) = ?", "#{updated_at}") }
 
   def self.most_revenue(limit_quantity)
-    Merchant.joins(:item_invoices, :transactions)
-            .merge(Transaction.successful)
-            .select('merchants.*, sum(item_invoices.unit_price * item_invoices.quantity) as revenue')
-            .group(:id)
-            .order('revenue desc')
-            .limit(limit_quantity)
+   joins(:item_invoices, :transactions)
+   .merge(Transaction.successful)
+   .select('merchants.*, sum(item_invoices.unit_price * item_invoices.quantity) as revenue')
+   .group(:id)
+   .order('revenue desc')
+   .limit(limit_quantity)
   end
 
   def self.most_items(limit_quantity)
-    Merchant.joins(:item_invoices, :transactions)
-            .merge(Transaction.successful)
-            .select('merchants.*, sum(item_invoices.quantity) as quantity')
-            .group(:id)
-            .order('quantity desc')
-            .limit(limit_quantity)
+   joins(:item_invoices, :transactions)
+   .merge(Transaction.successful)
+   .select('merchants.*, sum(item_invoices.quantity) as quantity')
+   .group(:id)
+   .order('quantity desc')
+   .limit(limit_quantity)
   end
 
   def self.revenue(merchant_id)
