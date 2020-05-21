@@ -45,7 +45,7 @@ describe 'Items API' do
       unit_price: 29.99,
       merchant_id: @merchant.id
     }
-    post "/api/v1/items", params: { item: item_params }
+    post "/api/v1/items", params: item_params
     item = Item.last
     item_response = JSON.parse(response.body)
 

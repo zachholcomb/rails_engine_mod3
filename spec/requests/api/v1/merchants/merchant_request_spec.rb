@@ -29,7 +29,7 @@ describe "Merchants API" do
       'name': 'GoNuts for DoNuts'
     }
 
-    post '/api/v1/merchants', params: { merchant: merchant_params }
+    post '/api/v1/merchants', params: merchant_params 
     merchant = Merchant.last
     merchant_response = JSON.parse(response.body)
 
