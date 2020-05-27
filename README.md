@@ -1,4 +1,5 @@
-Rails Engine
+# Rails Engine
+  
 This application is a REST API for the Rails Engine project for the Turing School of Software and Design.
 
 It includes
