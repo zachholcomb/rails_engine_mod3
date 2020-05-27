@@ -11,8 +11,7 @@ This application is a REST API for the Rails Engine project for the Turing Schoo
 1. rails db:create && rails db:schema:load
 1. bundle exec rake db:seed:from_csv
 
-Make sure your Rails Engine Database is seeded with the original data from the provided csv files
-Make sure Rails Engine is serving from the url you specified in config/application.yml (localhost:3000 if you copied the example config/application.yml above)
-
 ## Front End
 To see rails_engine in action with a front end, clone this repository https://github.com/turingschool-examples/rails_driver and follow the setup steps in that ReadME.
+
+REMINDER:  If you want to run rails_engine with the front end rails driver you will have to set it up following rails_driver's specifications!
